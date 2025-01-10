@@ -1,2 +1,2 @@
-# FIFO
+# FIPO
 finance-project
