@@ -1,4 +1,4 @@
 package springproject.financeproject.dto;
 
-public class DividendDTO {
+public class LoginRequest {
 }
