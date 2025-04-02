@@ -1,14 +1,11 @@
 package springproject.financeproject.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import springproject.financeproject.domain.Stock;
 import springproject.financeproject.dto.StockResponse;
 import springproject.financeproject.repository.StockRepository;
-import springproject.financeproject.service.StockService;
 
 import java.util.List;
 import java.util.stream.Collectors;

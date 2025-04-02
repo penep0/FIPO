@@ -3,7 +3,6 @@ package springproject.financeproject.service;
 import org.springframework.stereotype.Service;
 import springproject.financeproject.domain.Portfolio;
 import springproject.financeproject.domain.PortfolioStock;
-import springproject.financeproject.domain.Stock;
 import springproject.financeproject.domain.User;
 import springproject.financeproject.repository.PortfolioRepository;
 import springproject.financeproject.repository.PortfolioStockRepository;

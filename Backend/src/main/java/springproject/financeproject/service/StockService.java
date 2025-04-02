@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import springproject.financeproject.domain.Stock;
 import springproject.financeproject.dto.StockApiResponse;
 import springproject.financeproject.repository.StockRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Deque;
 import java.util.List;
 
 @Service

@@ -1,7 +1,6 @@
 package springproject.financeproject.dto;
 
 import lombok.*;
-import springproject.financeproject.domain.Stock;
 
 import java.time.LocalDate;
 
