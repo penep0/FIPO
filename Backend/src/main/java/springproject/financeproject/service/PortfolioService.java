@@ -1,6 +1,5 @@
 package springproject.financeproject.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import springproject.financeproject.domain.Portfolio;
 import springproject.financeproject.domain.PortfolioStock;

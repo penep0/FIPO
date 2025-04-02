@@ -8,9 +8,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import springproject.financeproject.domain.Stock;
 import springproject.financeproject.dto.StockApiResponse;
-import springproject.financeproject.domain.StockHistory;
-import springproject.financeproject.dto.StockResponse;
-import springproject.financeproject.repository.StockHistoryRepository;
 import springproject.financeproject.repository.StockRepository;
 
 import java.time.LocalDate;
@@ -23,7 +20,6 @@ public class StockService {
 
     private final RestClient restClient;
     private final StockRepository stockRepository;
-    private final StockHistoryRepository stockHistoryRepository;
 
     @Value("${publicdata.api.key}")
     private String apiKey;
@@ -31,13 +27,11 @@ public class StockService {
     @Value("${publicdata.api.url}")
     private String apiUrl;
 
-    public Deque<StockHistory> stockDeque;
 
     @Autowired
-    public StockService(RestClient.Builder restClientBuilder, StockRepository stockRepository, StockHistoryRepository stockHistoryRepository) {
+    public StockService(RestClient.Builder restClientBuilder, StockRepository stockRepository) {
         this.restClient = restClientBuilder.build();
         this.stockRepository = stockRepository;
-        this.stockHistoryRepository = stockHistoryRepository;
     }
 
     public void saveStockData(String endpoint) {
@@ -168,17 +162,6 @@ public class StockService {
             } else {
                 hasNextPage = false; // 응답이 없으면 루프 종료
             }
-        }
-    }
-
-    public void saveAllStockHistoryData(){
-        List<Stock> stocks = stockRepository.findAll();
-        for (Stock stock : stocks) {
-            StockHistory stockHistory = StockHistory.builder()
-                    .stock(stock)
-                    .build();
-
-            stockHistoryRepository.save(stockHistory);
         }
     }
 

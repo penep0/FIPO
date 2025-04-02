@@ -12,7 +12,7 @@ import springproject.financeproject.domain.Stock;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class StockDTO {
+public class StockDto {
 
     private String srtnCd;     // 단축코드
     private String isinCd;     // ISIN 코드
