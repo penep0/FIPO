@@ -43,3 +43,6 @@ build/
 *.class
 application.properties
 application.yml
+
+# fifo/.gitignore
+.env
