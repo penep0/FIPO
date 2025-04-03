@@ -44,5 +44,5 @@ build/
 application.properties
 application.yml
 
-# fifo/.gitignore
+# FIPO/.gitignore
 .env
