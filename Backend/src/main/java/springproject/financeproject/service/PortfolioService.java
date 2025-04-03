@@ -85,9 +85,43 @@ public class PortfolioService {
             PortfolioStock target = existingStock.get();
             target.setStockNum(target.getStockNum() + stockNum);
             target.setCash(target.getCash() + cash);
+            updateStockProceedAndEarningMoney(existingStock.get());
+            updatePortfolioProceed(portfolio);
         }else {
             PortfolioStock portfolioStock = createPortfolioStock(stockDto, stockNum, cash);
             portfolio.getStocks().add(portfolioStock);
+            updatePortfolioProceed(portfolio);
+        }
+    }
+
+    //주식 판매
+    public void sellStockInPortfolio(Portfolio portfolio, StockDto stockDto, int stockNum, long cash) {
+        Optional<PortfolioStock> existingStock = portfolio.getStocks().stream()
+                .filter(ps -> ps.getItmsNm().equals(stockDto.getItmsNm()))
+                .findFirst();
+
+        if (existingStock.isPresent()) {
+            PortfolioStock target = existingStock.get();
+
+            if (target.getStockNum() < stockNum) {
+                throw new RuntimeException("보유 수량보다 많은 수량을 판매할 수 없습니다.");
+            }
+
+            target.setStockNum(target.getStockNum() - stockNum);
+            target.setCash(target.getCash() + cash);
+
+            // 수익률 및 수익금 갱신
+            updateStockProceedAndEarningMoney(target);
+            updatePortfolioProceed(portfolio);
+
+            // 보유 수량이 0이면 제거
+            if (target.getStockNum() == 0) {
+                portfolio.getStocks().remove(target);
+                portfolioStockRepository.delete(target);
+            }
+
+        } else {
+            throw new RuntimeException("해당 주식을 보유하고 있지 않습니다: " + stockDto.getItmsNm());
         }
     }
 }

@@ -37,5 +37,7 @@ public class PortfolioStock {
         this.itmsNm = itmsNm;
         this.mrktCtg = mrktCtg;
         this.mkp = mkp;
+        this.proceeds = 0;
+        this.earningMoney = 0;
     }
 }
