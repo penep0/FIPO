@@ -41,88 +41,66 @@ class PortfolioServiceTest {
     }
 
     @Test
-    void testCreatePortfolioStock() {
+    void testSellStockInPortfolio_Success() {
+        Portfolio portfolio = new Portfolio();
+        PortfolioStock stock = new PortfolioStock();
+        stock.setItmsNm("삼성전자");
+        stock.setIsinCd("123456");
+        stock.setStockNum(10);
+        stock.setCash(100000L);
+        portfolio.setStocks(new ArrayList<>(List.of(stock)));
+
         StockDto stockDto = StockDto.builder()
-                .isinCd("123456")
                 .itmsNm("삼성전자")
-                .basDt("2024.3.12")
-                .mrktCtg("KOSPI")
-                .mkp(10000L)
-                .build();
-
-        PortfolioStock mockSaved = new PortfolioStock();
-        mockSaved.setItmsNm("삼성전자");
-
-        when(portfolioStockRepository.save(any())).thenReturn(mockSaved);
-
-        PortfolioStock result = portfolioService.createPortfolioStock(stockDto, 10, 100000);
-
-        assertNotNull(result);
-        assertEquals("삼성전자", result.getItmsNm());
-    }
-
-    @Test
-    void testUpdateStockProceedAndEarningMoney() {
-        PortfolioStock portfolioStock = new PortfolioStock();
-        portfolioStock.setIsinCd("123456");
-        portfolioStock.setMkp(10000L);
-        portfolioStock.setStockNum(10);
-
-        StockDto stockDto = StockDto.builder()
                 .isinCd("123456")
-                .mkp(12000L) // 현재가
                 .build();
 
-        when(stockService.loadStockDataByIsinDc("123456")).thenReturn(stockDto);
+        StockDto marketPrice = StockDto.builder().isinCd("123456").mkp(12000L).build();
+        when(stockService.loadStockDataByIsinDc("123456")).thenReturn(marketPrice);
 
-        portfolioService.updateStockProceedAndEarningMoney(portfolioStock);
+        portfolioService.sellStockInPortfolio(portfolio, stockDto, 5, 60000L);
 
-        assertEquals(20000L, portfolioStock.getEarningMoney());
-        assertTrue(portfolioStock.getProceeds() > 0);
+        assertEquals(5, stock.getStockNum());
+        assertEquals(160000L, stock.getCash());
     }
 
     @Test
-    void testAddStockInPortfolio_NewStock() {
+    void testSellStockInPortfolio_NotOwned() {
         Portfolio portfolio = new Portfolio();
         portfolio.setStocks(new ArrayList<>());
 
         StockDto stockDto = StockDto.builder()
-                .isinCd("ABC")
-                .itmsNm("카카오")
-                .basDt("2025.2.1")
-                .mrktCtg("KOSPI")
-                .mkp(90000L)
+                .itmsNm("없는종목")
+                .isinCd("000000")
                 .build();
 
-        PortfolioStock mockSaved = new PortfolioStock();
-        mockSaved.setItmsNm("카카오");
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            portfolioService.sellStockInPortfolio(portfolio, stockDto, 1, 1000L);
+        });
 
-        when(portfolioStockRepository.save(any())).thenReturn(mockSaved);
-
-        portfolioService.addStockInPortfolio(portfolio, stockDto, 5, 450000);
-
-        assertEquals(1, portfolio.getStocks().size());
-        assertEquals("카카오", portfolio.getStocks().get(0).getItmsNm());
+        assertTrue(exception.getMessage().contains("해당 주식을 보유하고 있지 않습니다"));
     }
 
     @Test
-    void testAddStockInPortfolio_ExistingStock() {
-        PortfolioStock existing = new PortfolioStock();
-        existing.setItmsNm("삼성전자");
-        existing.setStockNum(5);
-        existing.setCash(300000);
+    void testSellStockInPortfolio_TooMany() {
+        PortfolioStock stock = new PortfolioStock();
+        stock.setItmsNm("삼성전자");
+        stock.setIsinCd("123456");
+        stock.setStockNum(3);
+        stock.setCash(50000L);
 
         Portfolio portfolio = new Portfolio();
-        portfolio.setStocks(new ArrayList<>(List.of(existing)));
+        portfolio.setStocks(new ArrayList<>(List.of(stock)));
 
         StockDto stockDto = StockDto.builder()
                 .itmsNm("삼성전자")
+                .isinCd("123456")
                 .build();
 
-        portfolioService.addStockInPortfolio(portfolio, stockDto, 3, 180000);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            portfolioService.sellStockInPortfolio(portfolio, stockDto, 5, 100000L);
+        });
 
-        assertEquals(1, portfolio.getStocks().size());
-        assertEquals(8, portfolio.getStocks().get(0).getStockNum());
-        assertEquals(480000, portfolio.getStocks().get(0).getCash());
+        assertTrue(exception.getMessage().contains("보유 수량보다 많은 수량을 판매할 수 없습니다."));
     }
 }

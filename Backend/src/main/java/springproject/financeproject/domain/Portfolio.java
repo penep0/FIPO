@@ -25,7 +25,7 @@ public class Portfolio {
 
     private double proceeds;
 
-    @OneToOne
+    @ManyToOne
     private User user;
 
     @OneToMany
