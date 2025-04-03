@@ -20,20 +20,6 @@ public class PortfolioService {
         this.portfolioStockRepository = portfolioStockRepository;
     }
 
-    public List<PortfolioStock> savePortfolioStocks(int stockNum, List<Stock> stocks) {
-        List<PortfolioStock> portfolioStocks = new ArrayList<>();
-        for(Stock stock : stocks) {
-            portfolioStocks.add(PortfolioStock.builder()
-                    .stockNum(stockNum)
-                    .stock(stock)
-                    .build());
-        }
-
-        portfolioStockRepository.saveAll(portfolioStocks);
-
-        return portfolioStocks;
-    }
-
     public Portfolio savePortfolio(Long totalCash, User user, List<PortfolioStock> stocks) {
         Portfolio portfolio = Portfolio.builder()
                 .totalCash(totalCash)

@@ -2,30 +2,31 @@ package springproject.financeproject.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockDto {
 
     private String srtnCd;     // 단축코드
+    private LocalDate basDt;
     private String isinCd;     // ISIN 코드
     private String itmsNm;     // 종목명
     private String mrktCtg;    // 시장 구분
 
     @JsonDeserialize(using = NumberDeserializers.LongDeserializer.class)
-    private long clpr;       // 종가
+    private double clpr;       // 종가
 
     @JsonDeserialize(using = NumberDeserializers.LongDeserializer.class)
-    private long vs;         // 대비
+    private double vs;         // 대비
 
     @JsonDeserialize(using = NumberDeserializers.FloatDeserializer.class)
-    private float fltRt;      // 등락률
+    private double fltRt;      // 등락률
 
     @JsonDeserialize(using = NumberDeserializers.LongDeserializer.class)
     private long mkp;        // 시가
@@ -47,23 +48,4 @@ public class StockDto {
 
     @JsonDeserialize(using = NumberDeserializers.LongDeserializer.class)
     private long mrktTotAmt; // 시가총액
-
-    public Stock toEntity(){
-        return Stock.builder()
-                .srtnCd(srtnCd)
-                .isinCd(isinCd)
-                .itmsNm(itmsNm)
-                .mrktCtg(mrktCtg)
-                .clpr(clpr)
-                .vs(vs)
-                .fltRt(fltRt)
-                .mkp(mkp)
-                .hipr(hipr)
-                .lopr(lopr)
-                .trqu(trqu)
-                .trPrc(trPrc)
-                .lstgStCnt(lstgStCnt)
-                .mrktTotAmt(mrktTotAmt)
-                .build();
-    }
 }

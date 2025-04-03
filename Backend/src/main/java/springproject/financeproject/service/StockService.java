@@ -7,17 +7,17 @@ import org.springframework.web.client.RestClient;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import springproject.financeproject.dto.StockApiResponse;
-import springproject.financeproject.repository.StockRepository;
+import springproject.financeproject.dto.StockDto;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class StockService {
 
     private final RestClient restClient;
-    private final StockRepository stockRepository;
 
     @Value("${publicdata.api.key}")
     private String apiKey;
@@ -27,12 +27,11 @@ public class StockService {
 
 
     @Autowired
-    public StockService(RestClient.Builder restClientBuilder, StockRepository stockRepository) {
+    public StockService(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder.build();
-        this.stockRepository = stockRepository;
     }
 
-    public void saveStockData(String endpoint) {
+    public List<StockDto> loadStockData(String endpoint) {
         // 서비스 키와 JSON 응답 타입을 포함한 전체 URI 생성
         String fullUri = String.format("%s%s?serviceKey=%s&resultType=json", apiUrl, endpoint, apiKey);
 
@@ -40,11 +39,11 @@ public class StockService {
                 .uri(fullUri)
                 .retrieve()
                 .toEntity(StockApiResponse.class);
-
+        List<StockDto> stocks = new ArrayList<>();
         StockApiResponse stockApiResponse = response.getBody();
         if (stockApiResponse != null && stockApiResponse.getResponse().getBody() != null) {
             stockApiResponse.getResponse().getBody().getItems().getItem().forEach(item -> {
-                Stock stock = Stock.builder()
+                StockDto stock = StockDto.builder()
                         .isinCd(item.getIsinCd())
                         .srtnCd(item.getSrtnCd())
                         .basDt(LocalDate.parse(item.getBasDt(), DateTimeFormatter.BASIC_ISO_DATE))
@@ -62,16 +61,17 @@ public class StockService {
                         .mrktTotAmt(Long.parseLong(item.getMrktTotAmt()))
                         .build();
 
-                stockRepository.save(stock);
+                stocks.add(stock);
             });
         }
+        return stocks;
     }
 
-    public void saveKOSPIStockData() {
+    public List<StockDto> loadKOSPIStockData(int page) {
         int pageNo = 1;
         boolean hasNextPage = true;
-        int maxPages = 100; // 최대 페이지 제한 설정 (예: 100페이지)
-
+        int maxPages = page; // 최대 페이지 제한 설정 (예: 100페이지)
+        List<StockDto> stocks = new ArrayList<>();
         while (hasNextPage && pageNo <= maxPages) {
             String fullUri = String.format("%s/getStockPriceInfo?serviceKey=%s&resultType=json&pageNo=%d&mrktCls=KOSPI", apiUrl, apiKey, pageNo);
 
@@ -86,7 +86,7 @@ public class StockService {
                     hasNextPage = false; // 데이터가 없으면 루프 종료
                 } else {
                     stockApiResponse.getResponse().getBody().getItems().getItem().forEach(item -> {
-                        Stock stock = Stock.builder()
+                        StockDto stock = StockDto.builder()
                                 .isinCd(item.getIsinCd())
                                 .srtnCd(item.getSrtnCd())
                                 .basDt(LocalDate.parse(item.getBasDt(), DateTimeFormatter.BASIC_ISO_DATE))
@@ -104,8 +104,7 @@ public class StockService {
                                 .mrktTotAmt(Long.parseLong(item.getMrktTotAmt()))
                                 .build();
 
-                        stockRepository.save(stock);
-
+                        stocks.add(stock);
                     });
                     pageNo++; // 다음 페이지로 이동
                 }
@@ -113,13 +112,14 @@ public class StockService {
                 hasNextPage = false; // 응답이 없으면 루프 종료
             }
         }
+        return stocks;
     }
 
-    public void saveKOSDAQStockData() {
+    public List<StockDto> loadKOSDAQStockData() {
         int pageNo = 1;
         boolean hasNextPage = true;
         int maxPages = 100; // 최대 페이지 제한 설정 (예: 100페이지)
-
+        List<StockDto> stocks = new ArrayList<>();
         while (hasNextPage && pageNo <= maxPages) {
             String fullUri = String.format("%s/getStockPriceInfo?serviceKey=%s&resultType=json&pageNo=%d&mrktCls=KOSAQ", apiUrl, apiKey, pageNo);
 
@@ -134,7 +134,7 @@ public class StockService {
                     hasNextPage = false; // 데이터가 없으면 루프 종료
                 } else {
                     stockApiResponse.getResponse().getBody().getItems().getItem().forEach(item -> {
-                        Stock stock = Stock.builder()
+                        StockDto stock = StockDto.builder()
                                 .isinCd(item.getIsinCd())
                                 .srtnCd(item.getSrtnCd())
                                 .basDt(LocalDate.parse(item.getBasDt(), DateTimeFormatter.BASIC_ISO_DATE))
@@ -152,7 +152,7 @@ public class StockService {
                                 .mrktTotAmt(Long.parseLong(item.getMrktTotAmt()))
                                 .build();
 
-                        stockRepository.save(stock);
+                        stocks.add(stock);
 
                     });
                     pageNo++; // 다음 페이지로 이동
@@ -161,13 +161,6 @@ public class StockService {
                 hasNextPage = false; // 응답이 없으면 루프 종료
             }
         }
-    }
-
-    public void deleteAllStockData() {
-        stockRepository.deleteAll();
-    }
-
-    public List<Stock> getAllStocks() {
-        return stockRepository.findAll();
+        return stocks;
     }
 }

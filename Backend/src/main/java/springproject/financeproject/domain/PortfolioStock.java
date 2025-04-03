@@ -26,19 +26,14 @@ public class PortfolioStock {
     private long mkp;        // 시가
     private long proceeds; //수익금
 
-    @OneToOne
-    @JoinColumn(name = "isinCd")
-    private Stock stock;
-
     @Builder
-    public PortfolioStock(int stockNum, Stock stock) {
+    public PortfolioStock(int stockNum, long cash, LocalDate basDt, String itmsNm, String mrktCtg, long mkp) {
         this.stockNum = stockNum;
-        this.cash = stockNum * stock.getMkp();
-        this.basDt = stock.getBasDt();
-        this.itmsNm = stock.getItmsNm();
-        this.mrktCtg = stock.getMrktCtg();
-        this.mkp = stock.getMkp();
-        this.stock = stock;
+        this.cash = cash;
+        this.basDt = basDt;
+        this.itmsNm = itmsNm;
+        this.mrktCtg = mrktCtg;
+        this.mkp = mkp;
         this.proceeds = 0;
     }
 }
