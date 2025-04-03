@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class StockDto {
 
     private String srtnCd;     // 단축코드
-    private LocalDate basDt;
+    private String basDt;
     private String isinCd;     // ISIN 코드
     private String itmsNm;     // 종목명
     private String mrktCtg;    // 시장 구분

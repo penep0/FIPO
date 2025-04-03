@@ -18,8 +18,8 @@ public class StockViewController {
     private final StockService stockService;
 
     @GetMapping("/stocks")
-    public String getKOSPIStockList(Model model) {
-        List<StockDto> stocks = stockService.loadKOSPIStockData(3);
+    public String getKOSPIStockList(Model model, @RequestParam Integer pageNo) {
+        List<StockDto> stocks = stockService.loadKOSPIStockData(pageNo);
         model.addAttribute("stocks", stocks);
         model.addAttribute("stockCount", stocks.size()); // 총 개수 추가
         return "stockList"; // stockList.html을 반환

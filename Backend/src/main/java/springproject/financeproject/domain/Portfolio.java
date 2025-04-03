@@ -17,11 +17,13 @@ public class Portfolio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String portfolioName;
+
     private Long totalCash;
 
     private Long earningRate;
 
-    private long proceeds;
+    private double proceeds;
 
     @OneToOne
     private User user;
@@ -30,19 +32,8 @@ public class Portfolio {
     private List<PortfolioStock> stocks;
 
     @Builder
-    public Portfolio(Long totalCash, User user, List<PortfolioStock> stocks) {
-        this.totalCash = totalCash;
+    public Portfolio(User user, String portfolioName) {
         this.user = user;
-        this.stocks = stocks;
-    }
-
-    public Portfolio updateEarningRate() {
-        long totalMoney = 0;
-        for (PortfolioStock stock : stocks) {
-            totalMoney += stock.getProceeds();
-        }
-        this.earningRate = totalMoney / stocks.size();
-        this.proceeds = totalMoney;
-        return this;
+        this.portfolioName = portfolioName;
     }
 }

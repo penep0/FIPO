@@ -18,7 +18,8 @@ public class User {
 
     @Id
     private Long id;
-    private String nickName;
+    private String email;
+    private String userName;
     private String password;
     private Long money;
 
