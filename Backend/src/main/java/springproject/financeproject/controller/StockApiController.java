@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/stock/api")
+@RequestMapping("/api/stock")
 public class StockApiController {
 
     private final StockService stockService;
@@ -22,5 +22,21 @@ public class StockApiController {
     @GetMapping("/kospi")
     public List<StockDto> getKospiStocks(@RequestParam(defaultValue = "1") int page) {
         return stockService.loadKOSPIStockDataPage(page);
+    }
+
+    // API endpoint to get KOSDAQ stocks
+    @GetMapping("/kosdaq")
+    public List<StockDto> getKosdaqStocks(@RequestParam(defaultValue = "1") int page) {
+        return stockService.loadKOSDAQStockDataPage(page);
+    }
+
+    @GetMapping("/search/itmsNm")
+    public StockDto getStockDataByItmsNm(@RequestParam String itmsNm) {
+        return stockService.loadStockDataByItmsNm(itmsNm);
+    }
+
+    @GetMapping("/search/isinCd")
+    public StockDto getStockDataByIsinCd(@RequestParam String isinCd) {
+        return stockService.loadStockDataByIsinCd(isinCd);
     }
 }

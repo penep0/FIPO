@@ -57,7 +57,7 @@ public class PortfolioService {
 
     //주식별 수익률 계산
     public void updateStockProceedAndEarningMoney (PortfolioStock portfolioStock) {
-        StockDto stockDto = stockService.loadStockDataByIsinDc(portfolioStock.getIsinCd());
+        StockDto stockDto = stockService.loadStockDataByIsinCd(portfolioStock.getIsinCd());
         double proceeds = (double) (stockDto.getMkp() - portfolioStock.getMkp()) / stockDto.getMkp();
         long money = (stockDto.getMkp() - portfolioStock.getMkp()) * portfolioStock.getStockNum();
         portfolioStock.setProceeds(proceeds);

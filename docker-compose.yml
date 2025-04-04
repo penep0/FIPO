@@ -13,7 +13,7 @@ services:
     ports:
       - "3307:3306"  # ✅ 호스트 3307 → 컨테이너 내부 3306
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - ./fipo_mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
