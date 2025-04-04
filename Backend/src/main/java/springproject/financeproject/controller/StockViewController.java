@@ -13,15 +13,13 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/stock")
 public class StockViewController {
 
     private final StockService stockService;
 
-    @GetMapping("/stocks")
-    public String getKOSPIStockList(Model model, @RequestParam Integer pageNo) {
-        List<StockDto> stocks = stockService.loadKOSPIStockData(pageNo);
-        model.addAttribute("stocks", stocks);
-        model.addAttribute("stockCount", stocks.size()); // 총 개수 추가
-        return "stockList"; // stockList.html을 반환
+    @GetMapping("/kospi")
+    public String kospiViewPage() {
+        return "stockList"; // templates/stock-list.html 렌더링
     }
 }

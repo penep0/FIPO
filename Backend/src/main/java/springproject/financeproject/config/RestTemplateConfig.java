@@ -16,24 +16,24 @@ import java.util.List;
 @Configuration
 public class RestTemplateConfig {
 
-    @Bean
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-
-        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
-
-        // Add support for JSON
-        MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter();
-        jacksonConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_JSON));
-        messageConverters.add(jacksonConverter);
-
-        // Add support for text/plain (sometimes APIs return JSON as text/plain)
-        StringHttpMessageConverter stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
-        stringConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_PLAIN));
-        messageConverters.add(stringConverter);
-
-        restTemplate.setMessageConverters(messageConverters);
-
-        return restTemplate;
-    }
+//    @Bean
+//    public RestTemplate restTemplate() {
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
+//
+//        // Add support for JSON
+//        MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter();
+//        jacksonConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_JSON));
+//        messageConverters.add(jacksonConverter);
+//
+//        // Add support for text/plain (sometimes APIs return JSON as text/plain)
+//        StringHttpMessageConverter stringConverter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
+//        stringConverter.setSupportedMediaTypes(Collections.singletonList(MediaType.TEXT_PLAIN));
+//        messageConverters.add(stringConverter);
+//
+//        restTemplate.setMessageConverters(messageConverters);
+//
+//        return restTemplate;
+//    }
 }

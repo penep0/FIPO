@@ -63,4 +63,16 @@ public class JwtTokenProvider {
                 .signWith(key)
                 .compact();
     }
+
+    public String createRefreshToken(String email) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + 1000L * 60 * 60 * 24 * 7); // 7일 유효
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(key)
+                .compact();
+    }
 }
