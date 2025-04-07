@@ -2,9 +2,12 @@ package springproject.financeproject.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import springproject.financeproject.domain.User;
+import springproject.financeproject.dto.UserDto;
 import springproject.financeproject.jwt.JwtTokenProvider;
 import springproject.financeproject.repository.UserRepository;
 
@@ -22,9 +25,9 @@ public class UserApiController {
         String email = jwtTokenProvider.getUsername(token);
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자 없음"));
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(new UserDto(user)); // ✅ 안전한 JSON 반환
     }
 
     // 토큰 추출 유틸

@@ -9,7 +9,6 @@ import StockTable from './components/StockTable';
 import Pagination from './components/Pagination';
 
 function MainPage() {
-  const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const [stocks, setStocks] = useState([]);
   const [market, setMarket] = useState('kospi');
@@ -22,22 +21,56 @@ function MainPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://localhost:8080/api/stock/${market}?page=${page}`,{
-        headers: {
-          'Authorization': `Bearer ${token}`
+  
+    const fetchStockData = async () => {
+      const token = localStorage.getItem('accessToken');
+  
+      let res = await fetch(`http://localhost:8080/api/stock/${market}?page=${page}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include'
+      });
+  
+      if (res.status === 401) {
+        // 🔁 리프레시 시도
+        const refreshRes = await fetch('http://localhost:8080/api/auth/refresh', {
+          method: 'POST',
+          credentials: 'include'
+        });
+  
+        if (!refreshRes.ok) {
+          console.error('리프레시 토큰도 만료됨');
+          setStocks([]);
+          setHasNext(false);
+          setIsLoading(false);
+          return;
         }
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setStocks(data);
-        setHasNext(data.length > 0);
-      })
-      .catch((err) => {
-        console.error('데이터 로딩 실패:', err);
-        setStocks([]);
-        setHasNext(false);
-      })
-      .finally(() => setIsLoading(false));
+  
+        const { accessToken: newAccessToken } = await refreshRes.json();
+        localStorage.setItem('accessToken', newAccessToken);
+  
+        // ✅ 다시 원래 요청 재시도
+        res = await fetch(`http://localhost:8080/api/stock/${market}?page=${page}`, {
+          headers: { Authorization: `Bearer ${newAccessToken}` },
+          credentials: 'include'
+        });
+      }
+  
+      if (!res.ok) {
+        throw new Error('주식 데이터 로딩 실패');
+      }
+  
+      const data = await res.json();
+      setStocks(data);
+      setHasNext(data.length > 0);
+      setIsLoading(false);
+    };
+  
+    fetchStockData().catch((err) => {
+      console.error(err);
+      setStocks([]);
+      setHasNext(false);
+      setIsLoading(false);
+    });
   }, [market, page]);
 
   const handleSort = (type) => setSort(type);

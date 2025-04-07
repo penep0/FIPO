@@ -21,33 +21,51 @@ function MyPage() {
     loadData(token);
   }, []);
 
-  const loadData = (token) => {
+  const loadData = async (accessToken) => {
     setIsLoading(true);
-    Promise.all([
-      fetch('http://localhost:8080/api/user/load', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then((res) => {
-        if (res.status === 401) throw new Error('Unauthorized');
-        return res.json();
-      }),
-      fetch('http://localhost:8080/api/portfolio/list', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }).then((res) => res.json()),
-    ])
-      .then(([userData, portfolioData]) => {
-        setUser(userData);
-        setPortfolios(portfolioData);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError('정보를 불러오는 데 실패했습니다.');
-        navigate('/login'); // 🔐 토큰은 있는데 유효하지 않을 경우도 redirect
-      })
-      .finally(() => setIsLoading(false));
+    try {
+      const userRes = await fetch('http://localhost:8080/api/user/load', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        credentials: 'include'
+      });
+  
+      // 🔁 Access Token 만료 시 refresh 시도
+      if (userRes.status === 401) {
+        const refreshRes = await fetch('http://localhost:8080/api/auth/refresh', {
+          method: 'POST',
+          credentials: 'include'
+        });
+  
+        if (!refreshRes.ok) throw new Error('리프레시 토큰도 만료됨');
+  
+        const refreshData = await refreshRes.json();
+        const newAccessToken = refreshData.accessToken;
+        localStorage.setItem('accessToken', newAccessToken);
+  
+        // 🔁 재시도
+        return loadData(newAccessToken);
+      }
+  
+      const portfolioRes = await fetch('http://localhost:8080/api/portfolio/list', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        credentials: 'include'
+      });
+  
+      if (!portfolioRes.ok) throw new Error('포트폴리오 로딩 실패');
+  
+      const userData = await userRes.json();
+      const portfolioData = await portfolioRes.json();
+  
+      setUser(userData);
+      setPortfolios(portfolioData);
+    } catch (err) {
+      console.error("🔥 에러 발생:", err.message);
+      console.error("전체 에러 객체:", err);
+      setError('정보를 불러오는 데 실패했습니다.');
+      navigate('/login');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCreatePortfolio = () => {
@@ -60,7 +78,8 @@ function MyPage() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({ name: newPortfolioName })
+      body: JSON.stringify({ name: newPortfolioName }),
+      credentials: 'include' // 👈 반드시 있어야 쿠키 같이 감
     })
       .then((res) => {
         if (!res.ok) throw new Error('생성 실패');
@@ -77,6 +96,29 @@ function MyPage() {
       .finally(() => setCreating(false));
   };
 
+  const handleDeletePortfolio = (portfolioId) => {
+    const token = localStorage.getItem('accessToken');
+    if (!window.confirm('정말 삭제하시겠습니까?')) return;
+  
+    fetch(`http://localhost:8080/api/portfolio/delete/${portfolioId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      credentials: 'include'
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('삭제 실패');
+        return res.json(); // 백엔드가 JSON 반환할 경우
+      })
+      .then(() => {
+        loadData(token); // 삭제 후 목록 갱신
+      })
+      .catch((err) => {
+        console.error(err);
+        alert('포트폴리오 삭제에 실패했습니다.');
+      });
+  };
 
   if (isLoading) return <div className="text-center text-gray-400 mt-10">📦 로딩 중...</div>;
   if (error) return <div className="text-center text-red-400 mt-10">❗ {error}</div>;
@@ -86,7 +128,7 @@ function MyPage() {
       <h1 className="text-3xl font-bold mb-6">👤 마이페이지</h1>
 
       <div className="mb-8 bg-zinc-800 p-4 rounded">
-        <p><strong>닉네임:</strong> {user.nickName}</p>
+        <p><strong>닉네임:</strong> {user.userName}</p>
         <p><strong>보유 현금:</strong> {user.money.toLocaleString()}원</p>
       </div>
 
@@ -118,12 +160,21 @@ function MyPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {portfolios.map((portfolio) => (
               <div key={portfolio.id} className="bg-zinc-800 p-4 rounded shadow">
-                <h3 className="text-xl font-bold mb-2">{portfolio.name}</h3>
-                <p>총 자산: {portfolio.totalValue.toLocaleString()}원</p>
-                <p>종목 수: {portfolio.stocks.length}</p>
+                <h3 className="text-xl font-bold mb-2">{portfolio.portfolioName}</h3>
+                <p>총 자산: {portfolio.totalCash}원</p>
+                <p>종목 수: {portfolio.stocks?.length ?? 0}</p>
                 <div className="flex justify-end mt-2 space-x-2">
-                  <button className="px-3 py-1 bg-zinc-700 rounded hover:bg-zinc-600">🔍 보기</button>
-                  <button className="px-3 py-1 bg-red-600 rounded hover:bg-red-700">🗑️ 삭제</button>
+                  <button 
+                    onClick={() => navigate(`/portfolio/${portfolio.id}`)}
+                    className="px-3 py-1 bg-zinc-700 rounded hover:bg-zinc-600">
+                      🔍 보기
+                  </button>
+                  <button 
+                    onClick={() => handleDeletePortfolio(portfolio.id)}
+                    disabled={creating}
+                    className="px-3 py-1 bg-red-600 rounded hover:bg-red-700">
+                    🗑️ 삭제
+                  </button>
                 </div>
               </div>
             ))}

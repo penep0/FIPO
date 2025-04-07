@@ -28,6 +28,10 @@ public class PortfolioStock {
     private double proceeds; //수익
     private long earningMoney;
 
+    @ManyToOne
+    @JoinColumn(name = "portfolio_id")
+    private Portfolio portfolio;
+
     @Builder
     public PortfolioStock(String isinCd, int stockNum, long cash, String basDt, String itmsNm, String mrktCtg, long mkp) {
         this.isinCd = isinCd;

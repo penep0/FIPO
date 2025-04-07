@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,12 +29,15 @@ public class Portfolio {
     @ManyToOne
     private User user;
 
-    @OneToMany
-    private List<PortfolioStock> stocks;
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PortfolioStock> stocks = new ArrayList<>();
 
     @Builder
     public Portfolio(User user, String portfolioName) {
         this.user = user;
         this.portfolioName = portfolioName;
+        this.totalCash = 0L;
+        this.earningRate = 0L;
+        this.proceeds = 0.0;
     }
 }

@@ -2,6 +2,7 @@ package springproject.financeproject.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import springproject.financeproject.domain.Portfolio;
 import springproject.financeproject.domain.PortfolioStock;
 import springproject.financeproject.domain.User;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class PortfolioService {
     private final PortfolioRepository portfolioRepository;
     private final PortfolioStockRepository portfolioStockRepository;
@@ -27,7 +29,8 @@ public class PortfolioService {
     }
 
     //포트폴리오에 추가할 주식 생성 (구매 시점, 구매시 시가 등)
-    public PortfolioStock createPortfolioStock(StockDto stockDto, int stockNum, long cash) {
+    public PortfolioStock createPortfolioStock(StockDto stockDto, int stockNum) {
+        long cash = stockDto.getMkp() * stockNum;
         PortfolioStock portfolioStock = PortfolioStock.builder()
                 .isinCd(stockDto.getIsinCd())
                 .stockNum(stockNum)
@@ -75,31 +78,39 @@ public class PortfolioService {
     }
 
     //주식 구매
-    public void addStockInPortfolio(Portfolio portfolio, StockDto stockDto, int stockNum, long cash) {
+    public void addStockInPortfolio(Portfolio portfolio, StockDto stockDto, int stockNum) {
         //포트폴리오 안에 같은 이름의 주식이 있나 확인.
         Optional<PortfolioStock> existingStock = portfolio.getStocks().stream()
                 .filter(ps -> ps.getItmsNm().equals(stockDto.getItmsNm()))
                 .findFirst();
 
+        long cash = stockDto.getMkp() * stockNum;
+
         if (existingStock.isPresent()) {
             PortfolioStock target = existingStock.get();
             target.setStockNum(target.getStockNum() + stockNum);
+            portfolio.getUser().setMoney(portfolio.getUser().getMoney() - cash);
             target.setCash(target.getCash() + cash);
+            portfolio.setTotalCash(portfolio.getTotalCash() + cash);
             updateStockProceedAndEarningMoney(existingStock.get());
             updatePortfolioProceed(portfolio);
         }else {
-            PortfolioStock portfolioStock = createPortfolioStock(stockDto, stockNum, cash);
+            PortfolioStock portfolioStock = createPortfolioStock(stockDto, stockNum);
+            portfolioStock.setPortfolio(portfolio);
             portfolio.getStocks().add(portfolioStock);
+            portfolioStockRepository.save(portfolioStock);
+            portfolio.getUser().setMoney(portfolio.getUser().getMoney() - cash);
+            portfolio.setTotalCash(portfolio.getTotalCash() + cash);
             updatePortfolioProceed(portfolio);
         }
     }
 
     //주식 판매
-    public void sellStockInPortfolio(Portfolio portfolio, StockDto stockDto, int stockNum, long cash) {
+    public void sellStockInPortfolio(Portfolio portfolio, StockDto stockDto, int stockNum) {
         Optional<PortfolioStock> existingStock = portfolio.getStocks().stream()
                 .filter(ps -> ps.getItmsNm().equals(stockDto.getItmsNm()))
                 .findFirst();
-
+        long cash = stockDto.getMkp() * stockNum;
         if (existingStock.isPresent()) {
             PortfolioStock target = existingStock.get();
 

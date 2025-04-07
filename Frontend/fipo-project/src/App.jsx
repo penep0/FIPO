@@ -4,6 +4,7 @@ import MainPage from './pages/MainPage';
 import StockDetailPage from './pages/StockDetailPage';
 import MyPage from './pages/MyPage';
 import LoginSuccessHandler from './pages/LoginSuccessHandler';
+import PortfolioDetailPage from './pages/PortfolioDetailPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Route path="/stock/:isinCd" element={<StockDetailPage />} />
       <Route path="/login/success" element={<LoginSuccessHandler />} />
       <Route path="/myPage" element={<MyPage />} />
+      <Route path="/portfolio/:id" element={<PortfolioDetailPage />} />
     </Routes>
   );
 }
