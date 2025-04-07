@@ -33,6 +33,7 @@ public class StockService {
         this.restClient = restClientBuilder.build();
     }
 
+    // 주식 데이터 로드 메서드
     public List<StockDto> loadStockData(String endpoint) {
         // 서비스 키와 JSON 응답 타입을 포함한 전체 URI 생성
         String fullUri = String.format("%s%s?serviceKey=%s&resultType=json", apiUrl, endpoint, apiKey);
@@ -69,6 +70,7 @@ public class StockService {
         return stocks;
     }
 
+    // KOSPI 주식 데이터 전체 로드 메서드
     public List<StockDto> loadKOSPIStockData(int page) {
         int pageNo = 1;
         boolean hasNextPage = true;
@@ -117,6 +119,7 @@ public class StockService {
         return stocks;
     }
 
+    // KOSPI 주식 데이터 페이지 로드 메서드
     public List<StockDto> loadKOSPIStockDataPage(int page) {
         int pageNo = page;
         List<StockDto> stocks = new ArrayList<>();
@@ -158,6 +161,7 @@ public class StockService {
         return stocks;
     }
 
+    // KOSDAQ 주식 데이터 페이지 로드 메서드
     public List<StockDto> loadKOSDAQStockDataPage(int page) {
         int pageNo = page;
         List<StockDto> stocks = new ArrayList<>();
