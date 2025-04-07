@@ -19,3 +19,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: finance-backend
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+
+  frontend:
+    build:
+      context: ./Frontend/fipo-project
+      dockerfile: Dockerfile
+    container_name: finance-frontend
+    ports:
+      - "5173:80"
