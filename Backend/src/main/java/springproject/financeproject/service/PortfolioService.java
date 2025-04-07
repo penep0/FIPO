@@ -47,15 +47,22 @@ public class PortfolioService {
     //포트폴리오 수익률 계산
     public void updatePortfolioProceed(Portfolio portfolio) {
         long totalCash = 0;
-        long earningRate = 0;
-        double proceeds = 0;
+        long earningMoney = 0;
+        double proceeds;
+
         for (PortfolioStock portfolioStock : portfolio.getStocks()) {
             totalCash += portfolioStock.getCash();
-            earningRate += portfolioStock.getEarningMoney();
+            earningMoney += portfolioStock.getEarningMoney();
         }
-        proceeds = earningRate/totalCash * 100;
-        portfolio.setEarningRate(earningRate);
-        portfolio.setProceeds(proceeds);
+
+        if (totalCash == 0) {
+            proceeds = 0.0;
+        } else {
+            proceeds = (double) earningMoney / totalCash * 100;
+        }
+
+        portfolio.setEarningRate((long) proceeds); // 수익률은 정수로 저장
+        portfolio.setProceeds(proceeds); // 수익금은 double로 저장
     }
 
     //주식별 수익률 계산
@@ -118,8 +125,10 @@ public class PortfolioService {
                 throw new RuntimeException("보유 수량보다 많은 수량을 판매할 수 없습니다.");
             }
 
+            portfolio.getUser().setMoney(portfolio.getUser().getMoney() + cash);
+            portfolio.setTotalCash(portfolio.getTotalCash() - cash);
             target.setStockNum(target.getStockNum() - stockNum);
-            target.setCash(target.getCash() + cash);
+            target.setCash(target.getCash() - cash);
 
             // 수익률 및 수익금 갱신
             updateStockProceedAndEarningMoney(target);

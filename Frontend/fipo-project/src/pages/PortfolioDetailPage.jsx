@@ -8,6 +8,11 @@ function PortfolioDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [showTradeModal, setShowTradeModal] = useState(false);
+  const [tradeMode, setTradeMode] = useState('buy'); // 'buy' or 'sell'
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [tradeQuantity, setTradeQuantity] = useState('');
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) return navigate('/login');
@@ -29,6 +34,41 @@ function PortfolioDetailPage() {
       })
       .finally(() => setIsLoading(false));
   }, [id]);
+
+  const handleTrade = (stock, mode) => {
+    setTradeMode(mode);
+    setSelectedStock(stock);
+    setTradeQuantity('');
+    setShowTradeModal(true);
+  };
+
+  const submitTrade = () => {
+    if (!tradeQuantity || isNaN(tradeQuantity) || tradeQuantity <= 0) {
+      alert('올바른 수량을 입력해주세요.');
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    const endpoint = tradeMode === 'buy' ? 'add' : 'sell';
+
+    fetch(`http://localhost:8080/api/portfolio/${endpoint}?portfolioId=${id}&isinCd=${selectedStock.isinCd}&quantity=${tradeQuantity}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      credentials: 'include'
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('거래 실패');
+        return res.text();
+      })
+      .then(() => {
+        alert('거래 완료!');
+        setShowTradeModal(false);
+        window.location.reload();
+      })
+      .catch(() => alert('거래 실패'));
+  };
 
   if (isLoading) return <div className="text-center text-gray-400 mt-10">📦 로딩 중...</div>;
   if (error) return <div className="text-center text-red-400 mt-10">❗ {error}</div>;
@@ -72,8 +112,18 @@ function PortfolioDetailPage() {
                   <td className="py-2">{stock.proceeds.toFixed(2)}%</td>
                   <td className="py-2">{stock.earningMoney.toLocaleString()}원</td>
                   <td className="py-2 space-x-2">
-                    <button className="px-2 py-1 bg-green-600 rounded hover:bg-green-700 text-sm">매수</button>
-                    <button className="px-2 py-1 bg-red-600 rounded hover:bg-red-700 text-sm">매도</button>
+                    <button
+                      className="px-2 py-1 bg-green-600 rounded hover:bg-green-700 text-sm"
+                      onClick={() => handleTrade(stock, 'buy')}
+                    >
+                      매수
+                    </button>
+                    <button
+                      className="px-2 py-1 bg-red-600 rounded hover:bg-red-700 text-sm"
+                      onClick={() => handleTrade(stock, 'sell')}
+                    >
+                      매도
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -92,6 +142,37 @@ function PortfolioDetailPage() {
           🔙 돌아가기
         </button>
       </div>
+
+      {showTradeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-zinc-800 p-6 rounded shadow-lg w-full max-w-md">
+            <h2 className="text-xl font-semibold mb-4">
+              {tradeMode === 'buy' ? '📥 매수하기' : '📤 매도하기'} - {selectedStock?.itmsNm}
+            </h2>
+            <input
+              type="number"
+              className="w-full p-2 rounded bg-zinc-700 text-white mb-4"
+              placeholder="수량 입력"
+              value={tradeQuantity}
+              onChange={(e) => setTradeQuantity(e.target.value)}
+            />
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowTradeModal(false)}
+                className="px-4 py-2 bg-gray-500 rounded hover:bg-gray-600"
+              >
+                취소
+              </button>
+              <button
+                onClick={submitTrade}
+                className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700"
+              >
+                {tradeMode === 'buy' ? '매수' : '매도'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
