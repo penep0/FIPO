@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function StockDetailPage() {
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
   const { isinCd } = useParams();
   const navigate = useNavigate();
   const [stock, setStock] = useState(null);
@@ -13,7 +15,7 @@ function StockDetailPage() {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`http://localhost:8080/api/stock/search/isinCd?isinCd=${isinCd}`)
+    fetch(`${BASE_URL}/api/stock/search/isinCd?isinCd=${isinCd}`)
       .then((res) => {
         if (!res.ok) throw new Error('주식 정보를 불러오지 못했습니다.');
         return res.json();
@@ -24,7 +26,7 @@ function StockDetailPage() {
 
     const token = localStorage.getItem('accessToken');
     if (token) {
-      fetch('http://localhost:8080/api/portfolio/list', {
+      fetch('${BASE_URL}/api/portfolio/list', {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -42,7 +44,7 @@ function StockDetailPage() {
     if (!selectedPortfolioId) return alert('포트폴리오를 선택해주세요.');
     if (!quantity || isNaN(quantity) || quantity <= 0) return alert('올바른 수량을 입력해주세요.');
 
-    fetch(`http://localhost:8080/api/portfolio/add?portfolioId=${selectedPortfolioId}&isinCd=${stock.isinCd}&quantity=${quantity}`, {
+    fetch(`${BASE_URL}/api/portfolio/add?portfolioId=${selectedPortfolioId}&isinCd=${stock.isinCd}&quantity=${quantity}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

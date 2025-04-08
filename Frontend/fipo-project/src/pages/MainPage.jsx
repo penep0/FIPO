@@ -9,6 +9,7 @@ import StockTable from './components/StockTable';
 import Pagination from './components/Pagination';
 
 function MainPage() {
+  const BASE_URL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
   const [stocks, setStocks] = useState([]);
   const [market, setMarket] = useState('kospi');
@@ -25,14 +26,14 @@ function MainPage() {
     const fetchStockData = async () => {
       const token = localStorage.getItem('accessToken');
   
-      let res = await fetch(`http://localhost:8080/api/stock/${market}?page=${page}`, {
+      let res = await fetch(`${BASE_URL}/api/stock/${market}?page=${page}`, {
         headers: { Authorization: `Bearer ${token}` },
         credentials: 'include'
       });
   
       if (res.status === 401) {
         // 🔁 리프레시 시도
-        const refreshRes = await fetch('http://localhost:8080/api/auth/refresh', {
+        const refreshRes = await fetch('${BASE_URL}/api/auth/refresh', {
           method: 'POST',
           credentials: 'include'
         });
@@ -49,7 +50,7 @@ function MainPage() {
         localStorage.setItem('accessToken', newAccessToken);
   
         // ✅ 다시 원래 요청 재시도
-        res = await fetch(`http://localhost:8080/api/stock/${market}?page=${page}`, {
+        res = await fetch(`${BASE_URL}/api/stock/${market}?page=${page}`, {
           headers: { Authorization: `Bearer ${newAccessToken}` },
           credentials: 'include'
         });
@@ -100,7 +101,7 @@ const handleSearch = () => {
     }
   
     setIsLoading(true);
-    fetch(`http://localhost:8080/api/stock/search/itmsNm?itmsNm=${encodeURIComponent(search)}`)
+    fetch(`${BASE_URL}/api/stock/search/itmsNm?itmsNm=${encodeURIComponent(search)}`)
       .then((res) => {
         if (!res.ok) throw new Error("검색 실패");
         return res.json();

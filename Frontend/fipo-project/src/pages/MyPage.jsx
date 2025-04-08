@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function MyPage() {
+  const BASE_URL = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem('accessToken');
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -24,14 +25,14 @@ function MyPage() {
   const loadData = async (accessToken) => {
     setIsLoading(true);
     try {
-      const userRes = await fetch('http://localhost:8080/api/user/load', {
+      const userRes = await fetch('${BASE_URL}/api/user/load', {
         headers: { Authorization: `Bearer ${accessToken}` },
         credentials: 'include'
       });
   
       // 🔁 Access Token 만료 시 refresh 시도
       if (userRes.status === 401) {
-        const refreshRes = await fetch('http://localhost:8080/api/auth/refresh', {
+        const refreshRes = await fetch('${BASE_URL}/api/auth/refresh', {
           method: 'POST',
           credentials: 'include'
         });
@@ -46,7 +47,7 @@ function MyPage() {
         return loadData(newAccessToken);
       }
   
-      const portfolioRes = await fetch('http://localhost:8080/api/portfolio/list', {
+      const portfolioRes = await fetch('${BASE_URL}/api/portfolio/list', {
         headers: { Authorization: `Bearer ${accessToken}` },
         credentials: 'include'
       });
@@ -72,7 +73,7 @@ function MyPage() {
     const token = localStorage.getItem('accessToken');
     if (!newPortfolioName.trim()) return;
     setCreating(true);
-    fetch('http://localhost:8080/api/portfolio/create', {
+    fetch('${BASE_URL}/api/portfolio/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -100,7 +101,7 @@ function MyPage() {
     const token = localStorage.getItem('accessToken');
     if (!window.confirm('정말 삭제하시겠습니까?')) return;
   
-    fetch(`http://localhost:8080/api/portfolio/delete/${portfolioId}`, {
+    fetch(`${BASE_URL}/api/portfolio/delete/${portfolioId}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`

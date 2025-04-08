@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function PortfolioDetailPage() {
+  const BASE_URL = import.meta.env.VITE_API_URL;
+  
   const { id } = useParams();
   const navigate = useNavigate();
   const [portfolio, setPortfolio] = useState(null);
@@ -17,7 +19,7 @@ function PortfolioDetailPage() {
     const token = localStorage.getItem('accessToken');
     if (!token) return navigate('/login');
 
-    fetch(`http://localhost:8080/api/portfolio/info/${id}`, {
+    fetch(`${BASE_URL}/api/portfolio/info/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       },
@@ -51,7 +53,7 @@ function PortfolioDetailPage() {
     const token = localStorage.getItem('accessToken');
     const endpoint = tradeMode === 'buy' ? 'add' : 'sell';
 
-    fetch(`http://localhost:8080/api/portfolio/${endpoint}?portfolioId=${id}&isinCd=${selectedStock.isinCd}&quantity=${tradeQuantity}`, {
+    fetch(`${BASE_URL}/api/portfolio/${endpoint}?portfolioId=${id}&isinCd=${selectedStock.isinCd}&quantity=${tradeQuantity}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`
