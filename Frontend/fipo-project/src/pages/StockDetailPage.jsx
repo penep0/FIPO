@@ -26,7 +26,7 @@ function StockDetailPage() {
 
     const token = localStorage.getItem('accessToken');
     if (token) {
-      fetch('${BASE_URL}/api/portfolio/list', {
+      fetch(`${BASE_URL}/api/portfolio/list`, {
         headers: {
           Authorization: `Bearer ${token}`
         },

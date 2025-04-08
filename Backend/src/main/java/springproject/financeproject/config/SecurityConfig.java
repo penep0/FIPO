@@ -57,6 +57,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:5173"); // React 개발 서버 등
+        config.addAllowedOrigin("http://3.107.233.111:5173");
         config.addAllowedMethod("*"); // GET, POST, PUT, DELETE 등
         config.addAllowedHeader("*");
         config.setAllowCredentials(true); // 쿠키 허용 시 true
