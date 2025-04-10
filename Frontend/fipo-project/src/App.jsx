@@ -5,11 +5,13 @@ import StockDetailPage from './pages/StockDetailPage';
 import MyPage from './pages/MyPage';
 import LoginSuccessHandler from './pages/LoginSuccessHandler';
 import PortfolioDetailPage from './pages/PortfolioDetailPage';
+import SignUpPage from './pages/SignupPage';
 
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignUpPage />} />
       <Route path="/" element={<MainPage />} />
       <Route path="/stock/:isinCd" element={<StockDetailPage />} />
       <Route path="/login/success" element={<LoginSuccessHandler />} />

@@ -41,8 +41,6 @@ build/
 .gradle/
 *.log
 *.class
-application.properties
-application.yml
 
-# FIPO/.gitignore
-.env
+#mysql volume
+fipo_mysql_data/

@@ -85,6 +85,12 @@ function LoginPage() {
 
         <div className="mt-8 space-y-3">
           <button
+            onClick={() => navigate('/signup')}
+            className="w-full py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+          >
+            회원가입
+          </button>
+          <button
             onClick={() => handleSocialLogin('google')}
             className="w-full py-2 rounded-md bg-white text-gray-800 font-semibold hover:bg-gray-200 transition"
           >
