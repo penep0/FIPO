@@ -17,8 +17,9 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/api/login`, {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
@@ -29,7 +30,7 @@ function LoginPage() {
 
       const data = await response.json();
       localStorage.setItem("token", data.token); // ✅ JWT 저장
-      navigate("/dashboard"); // ✅ 로그인 성공 시 이동
+      navigate("/"); // ✅ 로그인 성공 시 이동
     } catch (err) {
       setError(err.message);
     } finally {
