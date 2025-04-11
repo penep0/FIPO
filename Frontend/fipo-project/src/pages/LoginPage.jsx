@@ -29,7 +29,7 @@ function LoginPage() {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token); // ✅ JWT 저장
+      localStorage.setItem("accessToken", data.accessToken); // ✅ JWT 저장
       navigate("/"); // ✅ 로그인 성공 시 이동
     } catch (err) {
       setError(err.message);
