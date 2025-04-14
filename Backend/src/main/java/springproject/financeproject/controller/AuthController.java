@@ -6,15 +6,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import springproject.financeproject.domain.RefreshToken;
 import springproject.financeproject.domain.User;
-import springproject.financeproject.dto.LoginRequest;
-import springproject.financeproject.dto.SignupRequest;
-import springproject.financeproject.dto.TokenRefreshRequest;
-import springproject.financeproject.dto.TokenResponse;
+import springproject.financeproject.dto.authDto.LoginRequest;
+import springproject.financeproject.dto.authDto.SignupRequest;
+import springproject.financeproject.dto.authDto.TokenRefreshRequest;
 import springproject.financeproject.jwt.JwtTokenProvider;
 import springproject.financeproject.repository.RefreshTokenRepository;
 import springproject.financeproject.repository.UserRepository;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -33,7 +33,7 @@ function MainPage() {
   
       if (res.status === 401) {
         // 🔁 리프레시 시도
-        const refreshRes = await fetch('${BASE_URL}/api/auth/refresh', {
+        const refreshRes = await fetch(`${BASE_URL}/api/auth/refresh`, {
           method: 'POST',
           credentials: 'include'
         });

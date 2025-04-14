@@ -6,11 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import springproject.financeproject.dto.StockApiResponse;
-import springproject.financeproject.dto.StockDto;
+import springproject.financeproject.dto.stockDto.StockApiResponse;
+import springproject.financeproject.dto.stockDto.StockDto;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

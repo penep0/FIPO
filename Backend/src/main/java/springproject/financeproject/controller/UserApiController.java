@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import springproject.financeproject.domain.User;
-import springproject.financeproject.dto.UserDto;
+import springproject.financeproject.dto.authDto.UserDto;
 import springproject.financeproject.jwt.JwtTokenProvider;
 import springproject.financeproject.repository.UserRepository;
 
