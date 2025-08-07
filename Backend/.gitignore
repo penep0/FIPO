@@ -42,6 +42,7 @@ build/
 *.log
 *.class
 application.properties
+application-template.properties
 application.yml
 
 # FIPO/.gitignore
