@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import springproject.financeproject.domain.Portfolio;
 import springproject.financeproject.domain.User;
-import springproject.financeproject.dto.stockDto.StockDto;
+import springproject.financeproject.dto.StockDto;
 import springproject.financeproject.repository.PortfolioRepository;
 import springproject.financeproject.repository.UserRepository;
 

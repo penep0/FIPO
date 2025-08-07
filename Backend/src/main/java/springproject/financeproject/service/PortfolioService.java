@@ -6,10 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import springproject.financeproject.domain.Portfolio;
 import springproject.financeproject.domain.PortfolioStock;
 import springproject.financeproject.domain.User;
-import springproject.financeproject.dto.stockDto.StockDto;
+import springproject.financeproject.dto.StockDto;
 import springproject.financeproject.repository.PortfolioRepository;
 import springproject.financeproject.repository.PortfolioStockRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service

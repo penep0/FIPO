@@ -17,8 +17,9 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("${BASE_URL}/api/login", {
+      const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
@@ -28,8 +29,8 @@ function LoginPage() {
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token); // ✅ JWT 저장
-      navigate("/dashboard"); // ✅ 로그인 성공 시 이동
+      localStorage.setItem("accessToken", data.accessToken); // ✅ JWT 저장
+      navigate("/"); // ✅ 로그인 성공 시 이동
     } catch (err) {
       setError(err.message);
     } finally {
@@ -84,6 +85,12 @@ function LoginPage() {
         </form>
 
         <div className="mt-8 space-y-3">
+          <button
+            onClick={() => navigate('/signup')}
+            className="w-full py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+          >
+            회원가입
+          </button>
           <button
             onClick={() => handleSocialLogin('google')}
             className="w-full py-2 rounded-md bg-white text-gray-800 font-semibold hover:bg-gray-200 transition"

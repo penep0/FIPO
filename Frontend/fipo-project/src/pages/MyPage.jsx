@@ -25,14 +25,14 @@ function MyPage() {
   const loadData = async (accessToken) => {
     setIsLoading(true);
     try {
-      const userRes = await fetch('${BASE_URL}/api/user/load', {
+      const userRes = await fetch(`${BASE_URL}/api/user/load`, {
         headers: { Authorization: `Bearer ${accessToken}` },
         credentials: 'include'
       });
   
       // 🔁 Access Token 만료 시 refresh 시도
       if (userRes.status === 401) {
-        const refreshRes = await fetch('${BASE_URL}/api/auth/refresh', {
+        const refreshRes = await fetch(`${BASE_URL}/api/auth/refresh`, {
           method: 'POST',
           credentials: 'include'
         });
@@ -47,7 +47,7 @@ function MyPage() {
         return loadData(newAccessToken);
       }
   
-      const portfolioRes = await fetch('${BASE_URL}/api/portfolio/list', {
+      const portfolioRes = await fetch(`${BASE_URL}/api/portfolio/list`, {
         headers: { Authorization: `Bearer ${accessToken}` },
         credentials: 'include'
       });
@@ -73,7 +73,7 @@ function MyPage() {
     const token = localStorage.getItem('accessToken');
     if (!newPortfolioName.trim()) return;
     setCreating(true);
-    fetch('${BASE_URL}/api/portfolio/create', {
+    fetch(`${BASE_URL}/api/portfolio/create`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
